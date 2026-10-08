@@ -137,6 +137,42 @@ export const AREAS: Area[] = [
     context:
       "Commercial arterial with heavy on-street parking, restaurants and pedestrian activity. Purple Line metro on the north end.",
   },
+  {
+    id: "mekhri-circle",
+    name: "Mekhri Circle",
+    lat: 13.0172,
+    lng: 77.584,
+    severity: 2,
+    context:
+      "Bellary Road (NH-44) meets Jayamahal Road and CV Raman Road beside Palace Grounds. Underpass for airport-bound through traffic; surface junction backs up at peak with event traffic from Palace Grounds.",
+  },
+  {
+    id: "jayadeva",
+    name: "Jayadeva Junction",
+    lat: 12.9167,
+    lng: 77.5999,
+    severity: 3,
+    context:
+      "Bannerghatta Road crosses Outer Ring Road by Jayadeva Hospital, with an underpass below. Yellow Line metro station with the Pink Line interchange under construction. Hospital, ambulance and BTM/JP Nagar traffic converge.",
+  },
+  {
+    id: "kr-market",
+    name: "KR Market",
+    lat: 12.9638,
+    lng: 77.5782,
+    severity: 2,
+    context:
+      "Wholesale market district under the BGS flyover in the old city. Green Line metro station, dense pedestrian flows, handcarts and goods vehicles, and narrow streets with heavy on-street loading.",
+  },
+  {
+    id: "manyata",
+    name: "Nagawara / Manyata (ORR)",
+    lat: 13.0456,
+    lng: 77.621,
+    severity: 3,
+    context:
+      "Outer Ring Road at Manyata Tech Park between Hebbal and KR Puram. Large IT campus with one main access, Pink Line metro terminus at Nagawara and the ORR Blue Line under construction overhead.",
+  },
 ];
 
 export const BENGALURU_CENTER = { lat: 12.9716, lng: 77.5946 };
