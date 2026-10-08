@@ -38,7 +38,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "road_widening",
-    words: ["widen", "widening", "more lanes", "extra lane", "lane addition"],
+    words: ["widen", "widened", "widening", "more lanes", "extra lane", "lane addition"],
     scores: { traffic_flow: 5, cost: 4, feasibility: 3, environment: 2, social_impact: 3, safety: 5, public_transport: 3 },
     cost: [80, 300], months: [18, 36], travel: -8,
     pro: "Adds capacity where the carriageway is a clear pinch point.",
@@ -56,7 +56,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "metro_line",
-    words: ["metro", "rail", "suburban", "train"],
+    words: ["metro", "rail", "railway", "suburban", "train"],
     scores: { traffic_flow: 8, cost: 3, feasibility: 5, environment: 8, social_impact: 8, safety: 8, public_transport: 10 },
     cost: [2000, 6000], months: [48, 84], travel: -22,
     pro: "High-capacity transit takes lakhs of trips off the road.",
@@ -74,7 +74,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "pedestrian_walkway",
-    words: ["footpath", "walk", "pedestrian", "sidewalk", "zebra", "crossing"],
+    words: ["footpath", "walk", "walking", "walkway", "walkable", "pedestrian", "sidewalk", "zebra", "crossing"],
     scores: { traffic_flow: 5, cost: 9, feasibility: 8, environment: 8, social_impact: 9, safety: 9, public_transport: 7 },
     cost: [2, 15], months: [2, 6], travel: -3,
     pro: "Makes the area safer and helps people reach buses and metro.",
@@ -92,7 +92,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "junction_redesign",
-    words: ["junction", "roundabout", "intersection", "redesign", "u-turn", "free left"],
+    words: ["junction", "roundabout", "intersection", "redesign", "redesigned", "u-turn", "free left"],
     scores: { traffic_flow: 7, cost: 8, feasibility: 8, environment: 7, social_impact: 7, safety: 8, public_transport: 6 },
     cost: [5, 30], months: [3, 10], travel: -12,
     pro: "Fixing geometry is the cheapest way to cut conflict points.",
@@ -119,7 +119,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "parking",
-    words: ["parking", "park"],
+    words: ["parking", "car park"],
     scores: { traffic_flow: 6, cost: 7, feasibility: 7, environment: 5, social_impact: 6, safety: 6, public_transport: 5 },
     cost: [10, 60], months: [6, 18], travel: -6,
     pro: "Clearing on-street parking frees a whole lane.",
@@ -128,7 +128,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "drainage",
-    words: ["drain", "flood", "waterlog", "rain"],
+    words: ["drain", "drainage", "flood", "flooding", "flooded", "waterlog", "waterlogging", "waterlogged", "rain", "rainfall"],
     scores: { traffic_flow: 6, cost: 7, feasibility: 7, environment: 8, social_impact: 8, safety: 8, public_transport: 6 },
     cost: [20, 120], months: [6, 18], travel: -5,
     pro: "Monsoon flooding is a top cause of gridlock; drainage fixes it at the root.",
@@ -137,7 +137,7 @@ const RULES: Rule[] = [
   },
   {
     kind: "green_buffer",
-    words: ["tree", "green", "plant", "park", "shade"],
+    words: ["tree", "green", "greenery", "plant", "planting", "park", "shade"],
     scores: { traffic_flow: 4, cost: 9, feasibility: 8, environment: 10, social_impact: 8, safety: 6, public_transport: 5 },
     cost: [1, 8], months: [2, 12], travel: 0,
     pro: "Shade and greenery make walking and waiting for buses bearable.",
@@ -148,11 +148,23 @@ const RULES: Rule[] = [
 
 const FALLBACK = RULES.find((r) => r.kind === "junction_redesign")!;
 
+// Whole-word match, allowing a plural ending, so "park" doesn't fire on "parking",
+// "bus" on "business", or "rain" on "train". Other word forms are listed explicitly.
+const wordPattern = (w: string) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:s|es)?\\b`);
+
+/** Position of the rule's earliest keyword in the text, or -1 if none matches. */
+function firstHit(rule: Rule, text: string): number {
+  const positions = rule.words.map((w) => text.search(wordPattern(w))).filter((i) => i >= 0);
+  return positions.length ? Math.min(...positions) : -1;
+}
+
 function pickRules(prompt: string): Rule[] {
   const text = prompt.toLowerCase();
   // Rank matched rules by where they first appear in the prompt, so the main ask comes first.
-  const firstHit = (r: Rule) => Math.min(...r.words.map((w) => text.indexOf(w)).filter((i) => i >= 0));
-  const hits = RULES.filter((r) => r.words.some((w) => text.includes(w))).sort((a, b) => firstHit(a) - firstHit(b));
+  const hits = RULES.map((r) => ({ r, at: firstHit(r, text) }))
+    .filter((h) => h.at >= 0)
+    .sort((a, b) => a.at - b.at)
+    .map((h) => h.r);
   return hits.length ? hits.slice(0, 3) : [FALLBACK];
 }
 
