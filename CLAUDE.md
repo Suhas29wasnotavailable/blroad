@@ -10,9 +10,10 @@ npm run dev        # web on :5173 (Vite) + API on :8787 (tsx watch), via concurr
 npm run build      # tsc -b (client) + tsc -p tsconfig.server.json (server) + vite build → dist/
 npm start          # production: Express serves the API and dist/ on :8787
 npm run lint       # oxlint
+npm test           # vitest: server/*.test.ts
 ```
 
-There is no test suite. To verify a change, run `npm run build && npm run lint`, then try it in the browser.
+Tests cover demo-mode keyword and place matching (`server/demo.test.ts`). To verify a change, run `npm run lint && npm test && npm run build`, then try it in the browser.
 
 ## Layout
 
