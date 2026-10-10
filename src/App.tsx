@@ -29,6 +29,19 @@ function loadHistory(): HistoryItem[] {
   }
 }
 
+/** A shared link (?p=<prompt>&area=<area id>) prefills the composer. It never runs a review by itself. */
+function sharedProposal(): { prompt: string; areaId: string | null } {
+  const params = new URLSearchParams(window.location.search);
+  const area = params.get("area");
+  return { prompt: (params.get("p") ?? "").slice(0, 4000), areaId: findArea(area) ? area : null };
+}
+
+function shareLink(prompt: string, areaId: string | null): string {
+  const params = new URLSearchParams({ p: prompt.trim() });
+  if (areaId) params.set("area", areaId);
+  return `${window.location.origin}${window.location.pathname}?${params}`;
+}
+
 function loadSlots(): [Slot, Slot] {
   try {
     const saved = JSON.parse(localStorage.getItem("blroad-compare") || "null");
@@ -57,9 +70,10 @@ async function requestEvaluation(prompt: string, areaId: string | null, focus: {
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("propose");
-  const [areaId, setAreaId] = useState<string | null>(null);
+  const [shared] = useState(sharedProposal);
+  const [areaId, setAreaId] = useState<string | null>(shared.areaId);
   const [focus, setFocus] = useState<{ lat: number; lng: number } | null>(null);
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState(shared.prompt);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -290,6 +304,7 @@ export default function App() {
                   mode={result.mode}
                   onUseImprovement={(t) => setPrompt((p) => `${p.trim()}\n\nAlso: ${t}`)}
                   onCompare={startCompare}
+                  shareUrl={shareLink(prompt, areaId)}
                 />
               )}
             </>

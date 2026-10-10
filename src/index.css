@@ -111,6 +111,7 @@ textarea::placeholder { color: var(--dim); }
 .secondary { background: transparent; border: 1px solid var(--line-2); color: var(--body); }
 .secondary:hover { border-color: var(--muted); color: var(--text); }
 .wide { width: 100%; }
+.result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 .composer { display: flex; flex-direction: column; gap: 14px; }
 .area-context { margin: -4px 0 0; font-size: 13px; line-height: 1.55; color: var(--muted); }
