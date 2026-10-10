@@ -9,14 +9,26 @@ interface Props {
   mode: "ai" | "demo";
   onUseImprovement: (text: string) => void;
   onCompare: () => void;
+  shareUrl: string;
 }
 
-export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, onCompare }: Props) {
+export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, onCompare, shareUrl }: Props) {
   const verdict = VERDICT_STYLE[ev.verdict];
   const travel = ev.peak_travel_time_change_pct;
   const score = useCountUp(Math.max(0, Math.min(100, ev.overall_score)));
   const [openFactor, setOpenFactor] = useState<string | null>(null);
   const [applied, setApplied] = useState<Set<number>>(new Set());
+  const [copied, setCopied] = useState(false);
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt("Copy this link:", shareUrl);
+    }
+  }
 
   return (
     <div className="result">
@@ -99,7 +111,12 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
         </ul>
       </section>
 
-      <button className="secondary wide" onClick={onCompare}>Compare with another proposal →</button>
+      <div className="result-actions">
+        <button className="secondary" onClick={copyLink} title="Copy a link that opens BLRoad with this proposal filled in">
+          {copied ? "Link copied" : "Copy link"}
+        </button>
+        <button className="secondary" onClick={onCompare}>Compare with another →</button>
+      </div>
     </div>
   );
 }
