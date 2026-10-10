@@ -21,7 +21,7 @@ npm run dev            # http://localhost:5173
 ## Before opening a pull request
 
 1. Branch off `main`.
-2. Run `npm run lint` and `npm run build`. CI runs both on every pull request.
+2. Run `npm run lint`, `npm test` and `npm run build`. CI runs all three on every pull request.
 3. Try your change in the browser. Add a screenshot to the PR if the UI changed.
 4. Keep PRs focused: one change per PR is much easier to review.
 

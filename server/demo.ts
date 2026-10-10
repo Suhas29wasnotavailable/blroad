@@ -158,7 +158,7 @@ function firstHit(rule: Rule, text: string): number {
   return positions.length ? Math.min(...positions) : -1;
 }
 
-function pickRules(prompt: string): Rule[] {
+export function pickRules(prompt: string): Rule[] {
   const text = prompt.toLowerCase();
   // Rank matched rules by where they first appear in the prompt, so the main ask comes first.
   const hits = RULES.map((r) => ({ r, at: firstHit(r, text) }))
@@ -191,7 +191,7 @@ const AREA_TERMS: Record<string, string[]> = {
 };
 
 /** Hotspots named in the prompt, in the order they are mentioned. */
-function mentionedAreas(prompt: string) {
+export function mentionedAreas(prompt: string) {
   const text = prompt.toLowerCase();
   return AREAS.map((a) => {
     const hits = (AREA_TERMS[a.id] ?? [a.name.toLowerCase()]).map((t) => text.indexOf(t)).filter((i) => i >= 0);
