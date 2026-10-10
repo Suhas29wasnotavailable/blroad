@@ -29,6 +29,18 @@ function loadHistory(): HistoryItem[] {
   }
 }
 
+function loadSlots(): [Slot, Slot] {
+  try {
+    const saved = JSON.parse(localStorage.getItem("blroad-compare") || "null");
+    if (Array.isArray(saved) && saved.length === 2) {
+      return saved.map((s: Partial<Slot>) => ({ ...emptySlot(), ...s, error: null })) as [Slot, Slot];
+    }
+  } catch {
+    /* storage unavailable or corrupt */
+  }
+  return [emptySlot(), emptySlot()];
+}
+
 async function requestEvaluation(prompt: string, areaId: string | null, focus: { lat: number; lng: number } | null): Promise<EvaluateResponse> {
   const started = Date.now();
   const res = await fetch("/api/evaluate", {
@@ -53,7 +65,7 @@ export default function App() {
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EvaluateResponse | null>(null);
-  const [slots, setSlots] = useState<[Slot, Slot]>([emptySlot(), emptySlot()]);
+  const [slots, setSlots] = useState<[Slot, Slot]>(loadSlots);
   const [compareView, setCompareView] = useState<"both" | Tone>("both");
   const [showProposal, setShowProposal] = useState(true);
   const [serverMode, setServerMode] = useState<"ai" | "demo" | null>(null);
@@ -92,6 +104,15 @@ export default function App() {
       /* storage unavailable */
     }
   }, [history]);
+
+  useEffect(() => {
+    try {
+      // Errors are transient, so they aren't worth restoring.
+      localStorage.setItem("blroad-compare", JSON.stringify(slots.map((s) => ({ ...s, error: null }))));
+    } catch {
+      /* storage unavailable */
+    }
+  }, [slots]);
 
   useEffect(() => {
     if (!loading) return;
