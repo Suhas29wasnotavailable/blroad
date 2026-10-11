@@ -39,7 +39,7 @@ export default function BuildLog({ features, tones, built, buildRun, visible, on
               <button onClick={() => onSpotlight(i)}>
                 <i style={{ background: tone ? TONE[tone] : style.color }} />
                 <span>{tone && <b>{tone.toUpperCase()}</b>}{f.label}</span>
-                <em>{style.label}</em>
+                <em>{style.label}{f.snapped === false && " · approximate"}</em>
               </button>
             </li>
           );
