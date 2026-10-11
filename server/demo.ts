@@ -184,6 +184,10 @@ const AREA_TERMS: Record<string, string[]> = {
   "dairy-circle": ["dairy circle", "bannerghatta"],
   "sirsi-circle": ["sirsi", "mysore road"],
   indiranagar: ["indiranagar"],
+  "mekhri-circle": ["mekhri"],
+  jayadeva: ["jayadeva"],
+  "kr-market": ["kr market", "k r market", "city market"],
+  manyata: ["manyata", "nagawara", "nagavara"],
 };
 
 /** Hotspots named in the prompt, in the order they are mentioned. */
