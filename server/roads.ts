@@ -52,6 +52,10 @@ export async function routeThrough(waypoints: LatLng[], maxDetour = 1.6): Promis
   if (cache.has(key)) return cache.get(key)!;
 
   let result: LatLng[] | null = null;
+  // Only a real answer from OSRM is cached. A timeout, network error or rate
+  // limit is transient, and caching it would mark the road approximate until
+  // the server restarts.
+  let definitive = false;
   try {
     const url = `${OSRM_URL}/route/v1/driving/${key}?overview=full&geometries=geojson&continue_straight=true`;
     const res = await fetch(url, {
@@ -59,6 +63,7 @@ export async function routeThrough(waypoints: LatLng[], maxDetour = 1.6): Promis
       headers: { "User-Agent": "BLRoad/0.1 (road proposal prototype)" },
     });
     if (res.ok) {
+      definitive = true;
       const data = (await res.json()) as { code: string; routes?: { geometry: { coordinates: [number, number][] } }[] };
       const coords = data.code === "Ok" ? data.routes?.[0]?.geometry.coordinates : undefined;
       if (coords && coords.length >= 2) {
@@ -72,16 +77,26 @@ export async function routeThrough(waypoints: LatLng[], maxDetour = 1.6): Promis
   } catch {
     // Network error or timeout: keep the original geometry.
   }
-  cache.set(key, result);
+  if (definitive) cache.set(key, result);
   return result;
+}
+
+/** Up to `n` points spread evenly along the line, always keeping both ends. */
+function evenly<T>(pts: T[], n: number): T[] {
+  if (pts.length <= n) return pts;
+  return Array.from({ length: n }, (_, i) => pts[Math.round((i * (pts.length - 1)) / (n - 1))]);
 }
 
 export async function snapFeatures(features: MapFeature[]): Promise<MapFeature[]> {
   return Promise.all(
     features.map(async (f) => {
+      // Already routed (demo mode), or not something that runs along a road.
+      if (f.snapped !== undefined) return f;
       if (f.geometry !== "line" || !ROAD_KINDS.has(f.kind) || f.coordinates.length < 2) return f;
-      const snapped = await routeThrough(f.coordinates.slice(0, 25));
-      return snapped ? { ...f, coordinates: snapped } : f;
+      // Sample along the whole line: taking only the first points would replace
+      // a long corridor with its opening stretch whenever that routed cleanly.
+      const routed = await routeThrough(evenly(f.coordinates, 25));
+      return routed ? { ...f, coordinates: routed, snapped: true } : { ...f, snapped: false };
     }),
   );
 }

@@ -70,7 +70,15 @@ export const Evaluation = z.object({
   features: z.array(MapFeature),
 });
 
-export type MapFeature = z.infer<typeof MapFeature>;
+export type MapFeature = z.infer<typeof MapFeature> & {
+  /**
+   * Set by the server, never by the model (so it stays out of the Zod schema):
+   * true when a road-based line was matched to the real street network, false
+   * when it is drawn as proposed because matching failed. Absent for features
+   * that don't follow roads.
+   */
+  snapped?: boolean;
+};
 export type Evaluation = z.infer<typeof Evaluation>;
 export type FeatureKind = (typeof FEATURE_KINDS)[number];
 export type FactorName = (typeof FACTOR_NAMES)[number];

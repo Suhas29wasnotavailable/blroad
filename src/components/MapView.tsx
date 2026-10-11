@@ -170,6 +170,9 @@ function FeaturePopup({ feature, tone }: { feature: MapFeature; tone?: Tone }) {
         </span>
         <strong>{feature.label}</strong>
         <p>{feature.description}</p>
+        {feature.snapped === false && (
+          <p className="popup-note">Approximate alignment: this line couldn't be matched to the street network, so it's drawn as proposed.</p>
+        )}
       </div>
     </Popup>
   );
@@ -184,6 +187,8 @@ function RoadLine({ feature, tone }: { feature: MapFeature; tone?: Tone }) {
   const color = tone ? TONE[tone] : style.color;
   // When comparing, A is a wide band and B a thin line, so a road both proposals use shows both colours.
   const weight = tone === "a" ? 10 : tone === "b" ? 3.5 : 5;
+  // A line that couldn't be matched to real streets is drawn dashed and dimmer, so it isn't mistaken for a surveyed route.
+  const approximate = feature.snapped === false;
   const pts = feature.coordinates;
   const full = useMemo(() => pts.map((c) => [c.lat, c.lng] as [number, number]), [pts]);
   const dist = useMemo(() => cumulative(pts), [pts]);
@@ -220,7 +225,7 @@ function RoadLine({ feature, tone }: { feature: MapFeature; tone?: Tone }) {
     <>
       <Polyline positions={full} pathOptions={{ color, weight: 1.5, opacity: 0.5, dashArray: "2 6", className: "survey" }} interactive={false} />
       <Polyline ref={glow} positions={[start, start]} pathOptions={{ color, weight: weight + 7, opacity: 0.18, lineCap: "round", className: "glow" }} interactive={false} />
-      <Polyline ref={core} positions={[start, start]} pathOptions={{ color, weight, opacity: 1, lineCap: "round", lineJoin: "round", dashArray: style.dash }}>
+      <Polyline ref={core} positions={[start, start]} pathOptions={{ color, weight, opacity: approximate ? 0.65 : 1, lineCap: "round", lineJoin: "round", dashArray: approximate ? "2 9" : style.dash }}>
         <Tooltip sticky className="map-tip">{feature.label}</Tooltip>
         <FeaturePopup feature={feature} tone={tone} />
       </Polyline>

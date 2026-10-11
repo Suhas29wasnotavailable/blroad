@@ -13,7 +13,7 @@ npm run lint       # oxlint
 npm test           # vitest: server/*.test.ts
 ```
 
-Tests cover demo-mode keyword and place matching (`server/demo.test.ts`). To verify a change, run `npm run lint && npm test && npm run build`, then try it in the browser.
+Tests cover demo-mode keyword and place matching (`server/demo.test.ts`) and road snapping with a stubbed `fetch` (`server/roads.test.ts`). To verify a change, run `npm run lint && npm test && npm run build`, then try it in the browser.
 
 ## Layout
 
@@ -102,7 +102,9 @@ The server uses the Zod schema to constrain Claude. The client imports **types o
 - `routeThrough(waypoints, maxDetour)` calls OSRM `route/v1/driving` with `overview=full` and `geometries=geojson`, with a 6 s timeout and an in-memory cache keyed by coordinates.
 - It **rejects** a route longer than `drawn length × maxDetour + 250 m`. A proposal is a corridor, not a trip, so loops and detours mean the snap went wrong. Rejection, network failure or a non-`Ok` response all return `null`, and the caller keeps the original geometry. Snapping must never break a response.
 - Routes are thinned to at most 250 points.
-- `snapFeatures()` only snaps `line` features whose kind is in `ROAD_KINDS`: flyover, underpass, road_widening, bus_lane, cycle_track, pedestrian_walkway, one_way. Metro lines, skywalks and drains don't follow roads, so they are left alone.
+- `snapFeatures()` only snaps `line` features whose kind is in `ROAD_KINDS`: flyover, underpass, road_widening, bus_lane, cycle_track, pedestrian_walkway, one_way. Metro lines, skywalks and drains don't follow roads, so they are left alone. Long lines are sampled **evenly along their whole length** (at most 25 waypoints) before routing.
+- Each road line gets `snapped: true | false`, an optional field on the `MapFeature` TS type that is deliberately **not** in the Zod schema, because the model never produces it. Features that already have it set are skipped; demo mode sets it on the corridors it has already routed. The map draws `snapped: false` lines dotted and dimmer, with an "Approximate alignment" note in the popup and "· approximate" in the construction log.
+- Only real OSRM answers are cached. Timeouts, network errors and rate limits are retried on the next request.
 - `BLROAD_OSRM_URL` overrides the public demo server, which is meant for light use only. Use your own instance in production.
 
 ## Demo mode (`server/demo.ts`)

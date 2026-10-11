@@ -255,7 +255,7 @@ async function shape(
       const t = k / 11;
       return offset({ lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t }, heading + 90, Math.sin(t * Math.PI) * 0.2);
     });
-  const line: MapFeature = { ...base, geometry: "line", coordinates };
+  const line: MapFeature = { ...base, geometry: "line", coordinates, snapped: routed != null };
 
   // Corridors that carry people get stops at the ends and the middle.
   if (rule.kind === "bus_lane" || rule.kind === "metro_line") {
