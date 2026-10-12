@@ -173,6 +173,33 @@ export const AREAS: Area[] = [
     context:
       "Outer Ring Road at Manyata Tech Park between Hebbal and KR Puram. Large IT campus with one main access, Pink Line metro terminus at Nagawara and the ORR Blue Line under construction overhead.",
   },
+  {
+    id: "agara",
+    name: "Agara (ORR)",
+    lat: 12.923,
+    lng: 77.6461,
+    severity: 2,
+    context:
+      "Outer Ring Road beside Agara Lake, between HSR Layout and Bellandur. IT-corridor traffic in both peaks, with the ORR Blue Line metro under construction overhead.",
+  },
+  {
+    id: "banashankari",
+    name: "Banashankari TTMC",
+    lat: 12.9178,
+    lng: 77.573,
+    severity: 2,
+    context:
+      "Kanakapura Road at the Banashankari bus station (TTMC), by the Green Line metro station. BMTC buses, metro passengers and through traffic to Kanakapura Road all converge on one junction.",
+  },
+  {
+    id: "yelahanka",
+    name: "Yelahanka",
+    lat: 13.0995,
+    lng: 77.5975,
+    severity: 2,
+    context:
+      "Yelahanka old town around Santhe Circle, near Yelahanka Junction railway station and off Bellary Road (NH-44) towards the airport. Narrow old-town streets, a market, and airport traffic nearby.",
+  },
 ];
 
 export const BENGALURU_CENTER = { lat: 12.9716, lng: 77.5946 };
