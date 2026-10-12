@@ -1,17 +1,11 @@
 import type { Evaluation } from "../shared/schema";
-import { FACTOR_LABEL } from "../featureStyle";
-
-const SHORT_LABEL: Partial<Record<string, string>> = {
-  public_transport: "Transit",
-  cost: "Value",
-  social_impact: "Social",
-  traffic_flow: "Traffic",
-};
+import { useT } from "../i18n";
 
 const clamp10 = (n: number) => Math.max(0, Math.min(10, n));
 
 /** Seven-axis spider chart. Pass one series for a single proposal, two to compare. */
 export function FactorRadar({ series }: { series: { factors: Evaluation["factors"]; color: string }[] }) {
+  const t = useT();
   const axes = series[0]?.factors.map((f) => f.name) ?? [];
   const size = 240;
   const cx = size / 2;
@@ -26,7 +20,7 @@ export function FactorRadar({ series }: { series: { factors: Evaluation["factors
   const scoreOf = (s: (typeof series)[number], name: string) => s.factors.find((f) => f.name === name)?.score ?? 0;
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="radar-chart" role="img" aria-label="Factor scores out of 10">
+    <svg viewBox={`0 0 ${size} ${size}`} className="radar-chart" role="img" aria-label={t.factorScores}>
       {[0.25, 0.5, 0.75, 1].map((k) => <polygon key={k} points={ring(k)} className="radar-grid" />)}
       {axes.map((_, i) => {
         const [x, y] = at(i, R);
@@ -50,7 +44,7 @@ export function FactorRadar({ series }: { series: { factors: Evaluation["factors
         const anchor = Math.abs(x - cx) < 8 ? "middle" : x > cx ? "start" : "end";
         return (
           <text key={name} x={x} y={y + 3} textAnchor={anchor} className="radar-label">
-            {SHORT_LABEL[name] ?? FACTOR_LABEL[name]}
+            {t.factorShort[name] ?? t.factorNames[name]}
           </text>
         );
       })}

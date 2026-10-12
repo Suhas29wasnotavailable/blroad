@@ -7,17 +7,18 @@ import { AREAS, findArea } from "./shared/areas";
 import type { EvaluateResponse, MapFeature } from "./shared/schema";
 import type { Tone } from "./featureStyle";
 import { emptySlot, type HistoryItem, type Slot } from "./types";
+import { LangContext, STRINGS, type Lang } from "./i18n";
 
-const EXAMPLES = [
-  { tag: "Bus", text: "Build a dedicated, physically separated bus lane on the Outer Ring Road from Silk Board to KR Puram with signal priority." },
-  { tag: "Flyover", text: "Add a second flyover loop at Hebbal for traffic coming from the city towards the airport." },
-  { tag: "Street", text: "Turn Indiranagar 100 Feet Road into a pedestrian-first street with wider footpaths, cycle lanes and paid parking." },
-  { tag: "Flooding", text: "Build an underpass at Marathahalli bridge and fix the drainage so it stops flooding." },
-  { tag: "Junction", text: "Redesign Sony World junction with a roundabout and adaptive signals instead of the stalled elevated corridor." },
+const EXAMPLES: { tag: keyof (typeof STRINGS)["en"]["exampleTags"]; text: string }[] = [
+  { tag: "bus", text: "Build a dedicated, physically separated bus lane on the Outer Ring Road from Silk Board to KR Puram with signal priority." },
+  { tag: "flyover", text: "Add a second flyover loop at Hebbal for traffic coming from the city towards the airport." },
+  { tag: "street", text: "Turn Indiranagar 100 Feet Road into a pedestrian-first street with wider footpaths, cycle lanes and paid parking." },
+  { tag: "flooding", text: "Build an underpass at Marathahalli bridge and fix the drainage so it stops flooding." },
+  { tag: "junction", text: "Redesign Sony World junction with a roundabout and adaptive signals instead of the stalled elevated corridor." },
 ];
 
-// What a review covers. Shown while waiting; it paces the wait, it doesn't measure it.
-const STAGES = ["Reading the site", "Peak-hour traffic", "Cost and feasibility", "Safety and environment", "Laying out the design"];
+// The review stages (t.stages) are shown while waiting; they pace the wait, they don't measure it.
+const STAGE_COUNT = STRINGS.en.stages.length;
 
 type Tab = "propose" | "compare";
 
@@ -69,6 +70,8 @@ async function requestEvaluation(prompt: string, areaId: string | null, focus: {
 }
 
 export default function App() {
+  const [lang] = useState<Lang>("en");
+  const t = STRINGS[lang];
   const [tab, setTab] = useState<Tab>("propose");
   const [shared] = useState(sharedProposal);
   const [areaId, setAreaId] = useState<string | null>(shared.areaId);
@@ -135,7 +138,7 @@ export default function App() {
     const id = window.setInterval(() => {
       const ms = Date.now() - t0;
       setElapsed(Math.floor(ms / 1000));
-      setStage(Math.min(STAGES.length - 1, Math.floor(ms / stagePace)));
+      setStage(Math.min(STAGE_COUNT - 1, Math.floor(ms / stagePace)));
     }, 200);
     return () => window.clearInterval(id);
   }, [loading, serverMode]);
@@ -171,7 +174,7 @@ export default function App() {
       remember(data, prompt, areaId);
       rebuild();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not reach the server.");
+      setError(e instanceof Error ? e.message : t.unreachable);
     } finally {
       setLoading(false);
     }
@@ -188,7 +191,7 @@ export default function App() {
           remember(data, s.prompt, s.areaId);
           return { ...s, result: data, error: null };
         } catch (e) {
-          return { ...s, error: e instanceof Error ? e.message : "Could not reach the server." };
+          return { ...s, error: e instanceof Error ? e.message : t.unreachable };
         }
       }),
     );
@@ -229,20 +232,21 @@ export default function App() {
   const bothCompared = !!slots[0].result && !!slots[1].result;
 
   return (
+    <LangContext.Provider value={lang}>
     <div className="app">
       <aside className="panel">
         <header className="masthead">
           <div className="wordmark">
             <span>BL</span>Road
           </div>
-          <span className="tagline">Proposals for Bengaluru's streets</span>
-          {serverMode && <span className={`mode ${serverMode}`}>{serverMode === "ai" ? "Live review" : "Demo data"}</span>}
+          <span className="tagline">{t.tagline}</span>
+          {serverMode && <span className={`mode ${serverMode}`}>{serverMode === "ai" ? t.modeLive : t.modeDemo}</span>}
         </header>
 
         <nav className="tabs" role="tablist">
-          <button role="tab" aria-selected={tab === "propose"} onClick={() => switchTab("propose")}>Propose</button>
+          <button role="tab" aria-selected={tab === "propose"} onClick={() => switchTab("propose")}>{t.tabPropose}</button>
           <button role="tab" aria-selected={tab === "compare"} onClick={() => switchTab("compare")}>
-            Compare{bothCompared && <i />}
+            {t.tabCompare}{bothCompared && <i />}
           </button>
         </nav>
 
@@ -251,34 +255,34 @@ export default function App() {
             <>
               <div className="composer">
                 <div className="field">
-                  <label htmlFor="area">Where</label>
+                  <label htmlFor="area">{t.where}</label>
                   <select id="area" value={areaId ?? ""} onChange={(e) => { setAreaId(e.target.value || null); setFocus(null); }}>
-                    <option value="">Anywhere in Bengaluru</option>
+                    <option value="">{t.anywhere}</option>
                     {AREAS.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
                   </select>
                 </div>
                 {selectedArea && <p className="area-context">{selectedArea.context}</p>}
                 {focus && (
                   <p className="pin-note">
-                    Pin at {focus.lat.toFixed(4)}, {focus.lng.toFixed(4)}
-                    <button className="link" onClick={() => setFocus(null)}>Remove</button>
+                    {t.pinAt(focus.lat.toFixed(4), focus.lng.toFixed(4))}
+                    <button className="link" onClick={() => setFocus(null)}>{t.remove}</button>
                   </p>
                 )}
                 <div className="field">
-                  <label htmlFor="prompt">What would you change?</label>
+                  <label htmlFor="prompt">{t.whatChange}</label>
                   <textarea
                     id="prompt"
                     rows={4}
                     value={prompt}
-                    placeholder="A bus-only lane on Hosur Road from Silk Board to Electronic City"
+                    placeholder={t.promptPlaceholder}
                     onChange={(e) => setPrompt(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) evaluate(); }}
                   />
                 </div>
                 <div className="composer-bottom">
-                  <span className="hint">Click the map to drop a pin · ⌘↵ to submit</span>
+                  <span className="hint">{t.composerHint}</span>
                   <button className="primary" onClick={evaluate} disabled={loading || !prompt.trim()}>
-                    {loading ? "Evaluating…" : "Evaluate"}
+                    {loading ? t.evaluating : t.evaluate}
                   </button>
                 </div>
               </div>
@@ -287,10 +291,10 @@ export default function App() {
 
               {!result && !loading && (
                 <section className="examples">
-                  <h3>Start from an example</h3>
+                  <h3>{t.examplesTitle}</h3>
                   {EXAMPLES.map((ex) => (
                     <button key={ex.text} onClick={() => setPrompt(ex.text)}>
-                      <b>{ex.tag}</b>
+                      <b>{t.exampleTags[ex.tag]}</b>
                       <span>{ex.text}</span>
                     </button>
                   ))}
@@ -324,19 +328,19 @@ export default function App() {
           {loading && (
             <section className="stages">
               <div className="stages-head">
-                <h3>Reviewing</h3>
+                <h3>{t.reviewing}</h3>
                 <span className="mono">{elapsed}s</span>
               </div>
               <ol>
-                {STAGES.map((s, i) => <li key={s} className={i < stage ? "done" : i === stage ? "active" : ""}>{s}</li>)}
+                {t.stages.map((s, i) => <li key={s} className={i < stage ? "done" : i === stage ? "active" : ""}>{s}</li>)}
               </ol>
-              {serverMode === "ai" && <p className="hint">A full review can take up to a minute.</p>}
+              {serverMode === "ai" && <p className="hint">{t.reviewSlow}</p>}
             </section>
           )}
 
           {history.length > 0 && tab === "propose" && (
             <section className="history">
-              <h3>Your past proposals</h3>
+              <h3>{t.pastProposals}</h3>
               {history.map((h) => (
                 <button key={h.at} onClick={() => restore(h)}>
                   <span>{h.evaluation.title}</span>
@@ -365,10 +369,10 @@ export default function App() {
         />
 
         {tab === "compare" && bothCompared && !loading && (
-          <div className="view-switch" role="group" aria-label="Which proposal to show">
+          <div className="view-switch" role="group" aria-label={t.whichProposal}>
             {(["both", "a", "b"] as const).map((v) => (
               <button key={v} className={`${v}${compareView === v ? " on" : ""}`} onClick={() => { setCompareView(v); rebuild(); }}>
-                {v === "both" ? "A + B" : `Only ${v.toUpperCase()}`}
+                {v === "both" ? t.viewBoth : t.viewOnly(v)}
               </button>
             ))}
           </div>
@@ -388,5 +392,6 @@ export default function App() {
         )}
       </main>
     </div>
+    </LangContext.Provider>
   );
 }
