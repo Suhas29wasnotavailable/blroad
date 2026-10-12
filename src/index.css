@@ -22,9 +22,10 @@
   --warn: #e8a33d;
   --bad: #e5544b;
   --radius: 4px;
-  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --display: "Archivo", "Noto Sans Kannada", "Helvetica Neue", Arial, sans-serif;
+  /* Noto Sans Kannada covers the script the Plex families don't, so Kannada renders the same everywhere. */
+  --sans: "IBM Plex Sans", "Noto Sans Kannada", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", "Noto Sans Kannada", ui-monospace, Menlo, monospace;
   font-family: var(--sans);
   font-size: 15px;
   color: var(--text);
@@ -49,6 +50,15 @@ h3, .label, label {
 .note { margin: 0; font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--warn); padding: 2px 0 2px 10px; }
 .error { margin: 0; font-size: 13.5px; color: #f3a29c; border-left: 2px solid var(--bad); padding: 4px 0 4px 10px; }
 .link { background: none; border: none; color: var(--accent); padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Kannada has no capitals, and tracking meant for Latin capitals pulls its clusters apart. */
+:lang(kn) h3, :lang(kn) .label, :lang(kn) label, :lang(kn) .stats dt, :lang(kn) .verdict,
+:lang(kn) .examples b, :lang(kn) .build-log em, :lang(kn) .chip, :lang(kn) .vt-names em {
+  /* Plex Mono's full-width spaces leave wide gaps between Kannada words. */
+  font-family: var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
 
 /* ---------- layout ---------- */
 .app { display: grid; grid-template-columns: 440px 1fr; height: 100%; }
