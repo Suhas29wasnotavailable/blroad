@@ -1,5 +1,6 @@
 import type { MapFeature } from "../shared/schema";
 import { KIND_STYLE, TONE, type Tone } from "../featureStyle";
+import { useT } from "../i18n";
 
 interface Props {
   features: MapFeature[];
@@ -14,18 +15,19 @@ interface Props {
 
 /** The list of map elements in build order, overlaid on the map. */
 export default function BuildLog({ features, tones, built, buildRun, visible, onToggle, onReplay, onSpotlight }: Props) {
+  const t = useT();
   const done = Math.min(built, features.length);
   const building = done < features.length;
   return (
     <section className="build-log">
       <header>
         <div>
-          <span className="label">{building ? "Building" : "Plan"}</span>
+          <span className="label">{building ? t.building : t.plan}</span>
           <strong>{done}<small>/{features.length}</small></strong>
         </div>
         <div className="build-actions">
-          <button onClick={onToggle}>{visible ? "Hide" : "Show"}</button>
-          <button onClick={onReplay}>Replay</button>
+          <button onClick={onToggle}>{visible ? t.hide : t.show}</button>
+          <button onClick={onReplay}>{t.replay}</button>
         </div>
       </header>
       <div className="progress"><i style={{ width: `${(done / features.length) * 100}%` }} /></div>
@@ -37,9 +39,9 @@ export default function BuildLog({ features, tones, built, buildRun, visible, on
           return (
             <li key={`${buildRun}-${i}`} className={state}>
               <button onClick={() => onSpotlight(i)}>
-                <i style={{ background: tone ? TONE[tone] : style.color }} />
+                <i style={{ background: tone ? TONE[tone] : style.color }}>{style.glyph}</i>
                 <span>{tone && <b>{tone.toUpperCase()}</b>}{f.label}</span>
-                <em>{style.label}{f.snapped === false && " · approximate"}</em>
+                <em>{t.kinds[f.kind] ?? style.label}{f.snapped === false && ` · ${t.approximate}`}</em>
               </button>
             </li>
           );

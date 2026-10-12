@@ -188,6 +188,9 @@ const AREA_TERMS: Record<string, string[]> = {
   jayadeva: ["jayadeva"],
   "kr-market": ["kr market", "k r market", "city market"],
   manyata: ["manyata", "nagawara", "nagavara"],
+  agara: ["agara"],
+  banashankari: ["banashankari", "kanakapura road"],
+  yelahanka: ["yelahanka"],
 };
 
 /** Hotspots named in the prompt, in the order they are mentioned. */

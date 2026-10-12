@@ -22,9 +22,10 @@
   --warn: #e8a33d;
   --bad: #e5544b;
   --radius: 4px;
-  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --display: "Archivo", "Noto Sans Kannada", "Helvetica Neue", Arial, sans-serif;
+  /* Noto Sans Kannada covers the script the Plex families don't, so Kannada renders the same everywhere. */
+  --sans: "IBM Plex Sans", "Noto Sans Kannada", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", "Noto Sans Kannada", ui-monospace, Menlo, monospace;
   font-family: var(--sans);
   font-size: 15px;
   color: var(--text);
@@ -50,6 +51,15 @@ h3, .label, label {
 .error { margin: 0; font-size: 13.5px; color: #f3a29c; border-left: 2px solid var(--bad); padding: 4px 0 4px 10px; }
 .link { background: none; border: none; color: var(--accent); padding: 0; font-size: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
+/* Kannada has no capitals, and tracking meant for Latin capitals pulls its clusters apart. */
+:lang(kn) h3, :lang(kn) .label, :lang(kn) label, :lang(kn) .stats dt, :lang(kn) .verdict,
+:lang(kn) .examples b, :lang(kn) .build-log em, :lang(kn) .chip, :lang(kn) .vt-names em {
+  /* Plex Mono's full-width spaces leave wide gaps between Kannada words. */
+  font-family: var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 /* ---------- layout ---------- */
 .app { display: grid; grid-template-columns: 440px 1fr; height: 100%; }
 .map-wrap { position: relative; min-width: 0; }
@@ -68,6 +78,9 @@ h3, .label, label {
 .wordmark { grid-row: span 2; font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: 30px; letter-spacing: -0.02em; line-height: 1; align-self: center; }
 .wordmark span { background: var(--accent); color: var(--accent-ink); padding: 0 4px; margin-right: 2px; border-radius: 2px; }
 .tagline { font-size: 13px; color: var(--muted); }
+.masthead { position: relative; padding-right: 100px !important; }
+.lang-toggle { position: absolute; top: 22px; right: 24px; font-size: 12px; padding: 3px 9px; border-radius: var(--radius); border: 1px solid var(--line-2); background: none; color: var(--body); }
+.lang-toggle:hover { border-color: var(--muted); color: var(--text); }
 .mode { font-family: var(--mono); font-size: 11px; color: var(--dim); display: inline-flex; align-items: center; gap: 6px; }
 .mode::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .mode.ai { color: var(--good); }
@@ -248,10 +261,10 @@ textarea::placeholder { color: var(--dim); }
 .progress { height: 2px; background: var(--line-2); }
 .progress i { display: block; height: 100%; background: var(--accent); transition: width .5s ease; }
 .build-log ol { list-style: none; margin: 0; padding: 0; overflow-y: auto; scrollbar-width: thin; }
-.build-log li button { width: 100%; display: grid; grid-template-columns: 8px 1fr; column-gap: 10px; align-items: center; text-align: left; background: none; border: none; border-bottom: 1px solid var(--line); padding: 7px 0; transition: opacity .3s; }
+.build-log li button { width: 100%; display: grid; grid-template-columns: 16px 1fr; column-gap: 10px; align-items: center; text-align: left; background: none; border: none; border-bottom: 1px solid var(--line); padding: 7px 0; transition: opacity .3s; }
 .build-log li:last-child button { border-bottom: none; }
 .build-log li button:hover span { color: var(--accent); }
-.build-log li i { width: 8px; height: 8px; border-radius: 1px; grid-row: span 2; }
+.build-log li i { width: 16px; height: 16px; border-radius: 2px; grid-row: span 2; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; font-style: normal; font-weight: 600; color: #0c0c0d; }
 .build-log li span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .15s; }
 .build-log li span b { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-right: 6px; }
 .build-log li em { font-style: normal; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
@@ -319,8 +332,8 @@ textarea::placeholder { color: var(--dim); }
 .leaflet-overlay-pane path.flow-slow { animation-duration: 2.8s; }
 .leaflet-overlay-pane path.zone { animation: fade-in .8s ease both; }
 .build-head { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid var(--c); transition: opacity .4s; }
-.site-pt { position: relative; width: 22px; height: 22px; animation: drop .4s cubic-bezier(.2,1.4,.4,1) both; }
-.site-pt b { position: absolute; inset: 5px; border-radius: 50%; background: var(--c); border: 2px solid #0c0c0d; }
+.site-pt { position: relative; width: 26px; height: 26px; animation: drop .4s cubic-bezier(.2,1.4,.4,1) both; }
+.site-pt b { position: absolute; inset: 3px; border-radius: 50%; background: var(--c); border: 2px solid #0c0c0d; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; font-weight: 600; line-height: 1; color: #0c0c0d; }
 .site-pt i { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--c); animation: ping 1s ease-out 1 both; }
 
 /* ---------- keyframes ---------- */

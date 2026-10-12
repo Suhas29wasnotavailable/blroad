@@ -47,6 +47,11 @@ describe("mentionedAreas", () => {
     expect(mentionedAreas("traffic near tin factory").map((a) => a.id)).toEqual(["kr-puram"]);
   });
 
+  it("knows the newer hotspots", () => {
+    expect(mentionedAreas("a bus lane from Banashankari to Yelahanka").map((a) => a.id)).toEqual(["banashankari", "yelahanka"]);
+    expect(mentionedAreas("fix the flooding on ORR at Agara").map((a) => a.id)).toEqual(["agara"]);
+  });
+
   it("returns nothing for unknown places", () => {
     expect(mentionedAreas("somewhere in Mysuru")).toEqual([]);
   });
