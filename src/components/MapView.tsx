@@ -17,6 +17,7 @@ import L from "leaflet";
 import { AREAS, BENGALURU_CENTER, type Area } from "../shared/areas";
 import type { MapFeature } from "../shared/schema";
 import { KIND_STYLE, SEVERITY_COLOR, TONE, type Tone } from "../featureStyle";
+import { useT } from "../i18n";
 
 type LatLng = { lat: number; lng: number };
 
@@ -161,17 +162,18 @@ function partial(pts: LatLng[], dist: number[], t: number): L.LatLngExpression[]
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
 function FeaturePopup({ feature, tone }: { feature: MapFeature; tone?: Tone }) {
+  const t = useT();
   const style = KIND_STYLE[feature.kind] ?? KIND_STYLE.other;
   return (
     <Popup>
       <div className="popup">
         <span className="chip" style={{ "--c": tone ? TONE[tone] : style.color } as CSSProperties}>
-          {tone && `${tone.toUpperCase()} · `}{style.label}
+          {tone && `${tone.toUpperCase()} · `}{t.kinds[feature.kind] ?? style.label}
         </span>
         <strong>{feature.label}</strong>
         <p>{feature.description}</p>
         {feature.snapped === false && (
-          <p className="popup-note">Approximate alignment: this line couldn't be matched to the street network, so it's drawn as proposed.</p>
+          <p className="popup-note">{t.approximateNote}</p>
         )}
       </div>
     </Popup>
