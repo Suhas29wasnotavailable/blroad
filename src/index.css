@@ -68,6 +68,9 @@ h3, .label, label {
 .wordmark { grid-row: span 2; font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: 30px; letter-spacing: -0.02em; line-height: 1; align-self: center; }
 .wordmark span { background: var(--accent); color: var(--accent-ink); padding: 0 4px; margin-right: 2px; border-radius: 2px; }
 .tagline { font-size: 13px; color: var(--muted); }
+.masthead { position: relative; padding-right: 100px !important; }
+.lang-toggle { position: absolute; top: 22px; right: 24px; font-size: 12px; padding: 3px 9px; border-radius: var(--radius); border: 1px solid var(--line-2); background: none; color: var(--body); }
+.lang-toggle:hover { border-color: var(--muted); color: var(--text); }
 .mode { font-family: var(--mono); font-size: 11px; color: var(--dim); display: inline-flex; align-items: center; gap: 6px; }
 .mode::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .mode.ai { color: var(--good); }
