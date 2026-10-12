@@ -7,7 +7,7 @@ import { AREAS, findArea } from "./shared/areas";
 import type { EvaluateResponse, MapFeature } from "./shared/schema";
 import type { Tone } from "./featureStyle";
 import { emptySlot, type HistoryItem, type Slot } from "./types";
-import { LangContext, STRINGS, type Lang } from "./i18n";
+import { LANG_NAMES, LangContext, STRINGS, loadLang, type Lang } from "./i18n";
 
 const EXAMPLES: { tag: keyof (typeof STRINGS)["en"]["exampleTags"]; text: string }[] = [
   { tag: "bus", text: "Build a dedicated, physically separated bus lane on the Outer Ring Road from Silk Board to KR Puram with signal priority." },
@@ -70,7 +70,7 @@ async function requestEvaluation(prompt: string, areaId: string | null, focus: {
 }
 
 export default function App() {
-  const [lang] = useState<Lang>("en");
+  const [lang, setLang] = useState<Lang>(loadLang);
   const t = STRINGS[lang];
   const [tab, setTab] = useState<Tab>("propose");
   const [shared] = useState(sharedProposal);
@@ -121,6 +121,15 @@ export default function App() {
       /* storage unavailable */
     }
   }, [history]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    try {
+      localStorage.setItem("blroad-lang", lang);
+    } catch {
+      /* storage unavailable */
+    }
+  }, [lang]);
 
   useEffect(() => {
     try {
@@ -241,6 +250,14 @@ export default function App() {
           </div>
           <span className="tagline">{t.tagline}</span>
           {serverMode && <span className={`mode ${serverMode}`}>{serverMode === "ai" ? t.modeLive : t.modeDemo}</span>}
+          <button
+            className="lang-toggle"
+            onClick={() => setLang(lang === "en" ? "kn" : "en")}
+            aria-label={t.language}
+            lang={lang === "en" ? "kn" : "en"}
+          >
+            {LANG_NAMES[lang === "en" ? "kn" : "en"]}
+          </button>
         </header>
 
         <nav className="tabs" role="tablist">
