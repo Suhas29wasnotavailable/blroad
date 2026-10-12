@@ -58,12 +58,12 @@ function hotspotIcon(a: Area, selected: boolean) {
   });
 }
 
-function pointIcon(color: string) {
+function pointIcon(color: string, glyph: string) {
   return L.divIcon({
     className: "",
-    html: `<div class="site-pt" style="--c:${color}"><i></i><b></b></div>`,
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
+    html: `<div class="site-pt" style="--c:${color}"><i></i><b>${glyph}</b></div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
   });
 }
 
@@ -250,7 +250,7 @@ function FeatureLayer({ feature, tone }: { feature: MapFeature; tone?: Tone }) {
 
   if (feature.geometry === "point" || positions.length === 1) {
     return (
-      <Marker position={positions[0]} icon={pointIcon(color)}>
+      <Marker position={positions[0]} icon={pointIcon(color, style.glyph)}>
         <Tooltip direction="top" offset={[0, -12]} className="map-tip">{feature.label}</Tooltip>
         <FeaturePopup feature={feature} tone={tone} />
       </Marker>

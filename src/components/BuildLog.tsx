@@ -37,7 +37,7 @@ export default function BuildLog({ features, tones, built, buildRun, visible, on
           return (
             <li key={`${buildRun}-${i}`} className={state}>
               <button onClick={() => onSpotlight(i)}>
-                <i style={{ background: tone ? TONE[tone] : style.color }} />
+                <i style={{ background: tone ? TONE[tone] : style.color }}>{style.glyph}</i>
                 <span>{tone && <b>{tone.toUpperCase()}</b>}{f.label}</span>
                 <em>{style.label}{f.snapped === false && " · approximate"}</em>
               </button>
