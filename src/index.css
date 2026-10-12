@@ -248,10 +248,10 @@ textarea::placeholder { color: var(--dim); }
 .progress { height: 2px; background: var(--line-2); }
 .progress i { display: block; height: 100%; background: var(--accent); transition: width .5s ease; }
 .build-log ol { list-style: none; margin: 0; padding: 0; overflow-y: auto; scrollbar-width: thin; }
-.build-log li button { width: 100%; display: grid; grid-template-columns: 8px 1fr; column-gap: 10px; align-items: center; text-align: left; background: none; border: none; border-bottom: 1px solid var(--line); padding: 7px 0; transition: opacity .3s; }
+.build-log li button { width: 100%; display: grid; grid-template-columns: 16px 1fr; column-gap: 10px; align-items: center; text-align: left; background: none; border: none; border-bottom: 1px solid var(--line); padding: 7px 0; transition: opacity .3s; }
 .build-log li:last-child button { border-bottom: none; }
 .build-log li button:hover span { color: var(--accent); }
-.build-log li i { width: 8px; height: 8px; border-radius: 1px; grid-row: span 2; }
+.build-log li i { width: 16px; height: 16px; border-radius: 2px; grid-row: span 2; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; font-style: normal; font-weight: 600; color: #0c0c0d; }
 .build-log li span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .15s; }
 .build-log li span b { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-right: 6px; }
 .build-log li em { font-style: normal; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
@@ -319,8 +319,8 @@ textarea::placeholder { color: var(--dim); }
 .leaflet-overlay-pane path.flow-slow { animation-duration: 2.8s; }
 .leaflet-overlay-pane path.zone { animation: fade-in .8s ease both; }
 .build-head { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid var(--c); transition: opacity .4s; }
-.site-pt { position: relative; width: 22px; height: 22px; animation: drop .4s cubic-bezier(.2,1.4,.4,1) both; }
-.site-pt b { position: absolute; inset: 5px; border-radius: 50%; background: var(--c); border: 2px solid #0c0c0d; }
+.site-pt { position: relative; width: 26px; height: 26px; animation: drop .4s cubic-bezier(.2,1.4,.4,1) both; }
+.site-pt b { position: absolute; inset: 3px; border-radius: 50%; background: var(--c); border: 2px solid #0c0c0d; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; font-weight: 600; line-height: 1; color: #0c0c0d; }
 .site-pt i { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--c); animation: ping 1s ease-out 1 both; }
 
 /* ---------- keyframes ---------- */
