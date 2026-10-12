@@ -9,8 +9,8 @@ export const KIND_STYLE: Record<
   { color: string; label: string; glyph: string; dash?: string; flow?: "slow" | "med" | "fast" }
 > = {
   flyover: { color: "#f08a4b", label: "Flyover", glyph: "F", flow: "fast" },
-  underpass: { color: "#b48ef0", label: "Underpass", glyph: "U", dash: "10 7", flow: "fast" },
-  road_widening: { color: "#e3b341", label: "Road widening", glyph: "R", flow: "med" },
+  underpass: { color: "#d0b0ff", label: "Underpass", glyph: "U", dash: "10 7", flow: "fast" },
+  road_widening: { color: "#b07a26", label: "Road widening", glyph: "R", flow: "med" },
   bus_lane: { color: "#e8607d", label: "Bus lane", glyph: "B", flow: "med" },
   metro_line: { color: "#8f86f5", label: "Metro line", glyph: "M", flow: "fast" },
   metro_station: { color: "#8f86f5", label: "Metro station", glyph: "M" },
@@ -19,12 +19,12 @@ export const KIND_STYLE: Record<
   skywalk: { color: "#4cc3cf", label: "Skywalk", glyph: "K", flow: "slow" },
   junction_redesign: { color: "#e5544b", label: "Junction redesign", glyph: "J" },
   signal_optimisation: { color: "#e8c547", label: "Signal upgrade", glyph: "S" },
-  one_way: { color: "#9aa0a8", label: "One-way", glyph: "1", dash: "12 7", flow: "med" },
-  parking: { color: "#8a8a90", label: "Parking", glyph: "P" },
-  green_buffer: { color: "#4fae7a", label: "Green buffer", glyph: "G" },
-  drainage: { color: "#5b8fd9", label: "Drainage", glyph: "D" },
-  removal: { color: "#d9655b", label: "Removal", glyph: "X", dash: "3 8" },
-  other: { color: "#8b93d6", label: "Other", glyph: "?" },
+  one_way: { color: "#6e747d", label: "One-way", glyph: "1", dash: "12 7", flow: "med" },
+  parking: { color: "#c9c9cf", label: "Parking", glyph: "P" },
+  green_buffer: { color: "#1f6b5a", label: "Green buffer", glyph: "G" },
+  drainage: { color: "#3b6fb5", label: "Drainage", glyph: "D" },
+  removal: { color: "#a33d35", label: "Removal", glyph: "X", dash: "3 8" },
+  other: { color: "#f0a8d8", label: "Other", glyph: "?" },
 };
 
 /** In compare mode every feature of a proposal takes its slot's colour. */
