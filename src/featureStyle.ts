@@ -2,24 +2,29 @@ import type { FactorName, FeatureKind } from "./shared/schema";
 
 // Palette tuned for the dark basemap: saturated enough to read, not neon.
 // `flow` marks corridors that get animated traffic once built.
-export const KIND_STYLE: Record<FeatureKind, { color: string; label: string; dash?: string; flow?: "slow" | "med" | "fast" }> = {
-  flyover: { color: "#f08a4b", label: "Flyover", flow: "fast" },
-  underpass: { color: "#b48ef0", label: "Underpass", dash: "10 7", flow: "fast" },
-  road_widening: { color: "#e3b341", label: "Road widening", flow: "med" },
-  bus_lane: { color: "#e8607d", label: "Bus lane", flow: "med" },
-  metro_line: { color: "#8f86f5", label: "Metro line", flow: "fast" },
-  metro_station: { color: "#8f86f5", label: "Metro station" },
-  cycle_track: { color: "#5cc184", label: "Cycle track", dash: "6 7", flow: "slow" },
-  pedestrian_walkway: { color: "#58a8e0", label: "Walkway", flow: "slow" },
-  skywalk: { color: "#4cc3cf", label: "Skywalk", flow: "slow" },
-  junction_redesign: { color: "#e5544b", label: "Junction redesign" },
-  signal_optimisation: { color: "#e8c547", label: "Signal upgrade" },
-  one_way: { color: "#9aa0a8", label: "One-way", dash: "12 7", flow: "med" },
-  parking: { color: "#8a8a90", label: "Parking" },
-  green_buffer: { color: "#4fae7a", label: "Green buffer" },
-  drainage: { color: "#5b8fd9", label: "Drainage" },
-  removal: { color: "#d9655b", label: "Removal", dash: "3 8" },
-  other: { color: "#8b93d6", label: "Other" },
+// `glyph` is drawn inside point markers and the construction log, so a feature can be told apart
+// without relying on colour (see npm run check:palette).
+export const KIND_STYLE: Record<
+  FeatureKind,
+  { color: string; label: string; glyph: string; dash?: string; flow?: "slow" | "med" | "fast" }
+> = {
+  flyover: { color: "#f08a4b", label: "Flyover", glyph: "F", flow: "fast" },
+  underpass: { color: "#d0b0ff", label: "Underpass", glyph: "U", dash: "10 7", flow: "fast" },
+  road_widening: { color: "#b07a26", label: "Road widening", glyph: "R", flow: "med" },
+  bus_lane: { color: "#e8607d", label: "Bus lane", glyph: "B", flow: "med" },
+  metro_line: { color: "#8f86f5", label: "Metro line", glyph: "M", flow: "fast" },
+  metro_station: { color: "#8f86f5", label: "Metro station", glyph: "M" },
+  cycle_track: { color: "#5cc184", label: "Cycle track", glyph: "C", dash: "6 7", flow: "slow" },
+  pedestrian_walkway: { color: "#58a8e0", label: "Walkway", glyph: "W", flow: "slow" },
+  skywalk: { color: "#4cc3cf", label: "Skywalk", glyph: "K", flow: "slow" },
+  junction_redesign: { color: "#e5544b", label: "Junction redesign", glyph: "J" },
+  signal_optimisation: { color: "#e8c547", label: "Signal upgrade", glyph: "S" },
+  one_way: { color: "#6e747d", label: "One-way", glyph: "1", dash: "12 7", flow: "med" },
+  parking: { color: "#c9c9cf", label: "Parking", glyph: "P" },
+  green_buffer: { color: "#1f6b5a", label: "Green buffer", glyph: "G" },
+  drainage: { color: "#3b6fb5", label: "Drainage", glyph: "D" },
+  removal: { color: "#a33d35", label: "Removal", glyph: "X", dash: "3 8" },
+  other: { color: "#f0a8d8", label: "Other", glyph: "?" },
 };
 
 /** In compare mode every feature of a proposal takes its slot's colour. */

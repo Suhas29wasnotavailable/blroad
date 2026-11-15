@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Evaluation } from "../shared/schema";
-import { FACTOR_LABEL, VERDICT_STYLE, scoreColor } from "../featureStyle";
+import { VERDICT_STYLE, scoreColor } from "../featureStyle";
+import { useT } from "../i18n";
 import { FactorRadar } from "./charts";
 import { useCountUp } from "../hooks";
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, onCompare, shareUrl }: Props) {
+  const t = useT();
   const verdict = VERDICT_STYLE[ev.verdict];
   const travel = ev.peak_travel_time_change_pct;
   const score = useCountUp(Math.max(0, Math.min(100, ev.overall_score)));
@@ -26,13 +28,13 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      window.prompt("Copy this link:", shareUrl);
+      window.prompt(t.copyPrompt, shareUrl);
     }
   }
 
   return (
     <div className="result">
-      {mode === "demo" && <p className="note">Demo data from built-in rules. Add an Anthropic API key for a site-specific review.</p>}
+      {mode === "demo" && <p className="note">{t.demoNote}</p>}
 
       <div className="score-block">
         <div className="score-num">
@@ -41,7 +43,7 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
         </div>
         <div className="score-meta">
           <span className="verdict" style={{ color: verdict.color }}>
-            <i style={{ background: verdict.color }} />{verdict.label}
+            <i style={{ background: verdict.color }} />{t.verdicts[ev.verdict]}
           </span>
           <h2>{ev.title}</h2>
         </div>
@@ -52,27 +54,27 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
 
       <dl className="stats">
         <div>
-          <dt>Cost</dt>
-          <dd>₹{ev.estimated_cost_crore.low}–{ev.estimated_cost_crore.high}<small>Cr</small></dd>
+          <dt>{t.cost}</dt>
+          <dd>₹{ev.estimated_cost_crore.low}–{ev.estimated_cost_crore.high}<small>{t.crore}</small></dd>
         </div>
         <div>
-          <dt>Build time</dt>
-          <dd>{ev.timeline_months.low}–{ev.timeline_months.high}<small>mo</small></dd>
+          <dt>{t.buildTime}</dt>
+          <dd>{ev.timeline_months.low}–{ev.timeline_months.high}<small>{t.months}</small></dd>
         </div>
         <div>
-          <dt>Peak commute</dt>
+          <dt>{t.peakCommute}</dt>
           <dd className={travel <= 0 ? "good" : "bad"}>{travel > 0 ? "+" : ""}{travel}<small>%</small></dd>
         </div>
       </dl>
 
       <section>
-        <h3>Factors</h3>
+        <h3>{t.factors}</h3>
         <FactorRadar series={[{ factors: ev.factors, color: "#f2c230" }]} />
         <ul className="factors">
           {ev.factors.map((f) => (
             <li key={f.name}>
               <button className="factor-row" onClick={() => setOpenFactor(openFactor === f.name ? null : f.name)} aria-expanded={openFactor === f.name}>
-                <span>{FACTOR_LABEL[f.name] ?? f.name}</span>
+                <span>{t.factorNames[f.name] ?? f.name}</span>
                 <span className="bar"><i style={{ width: `${Math.max(0, Math.min(10, f.score)) * 10}%`, background: scoreColor(f.score) }} /></span>
                 <span className="factor-score">{f.score}</span>
               </button>
@@ -84,17 +86,17 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
 
       <section className="two-col">
         <div>
-          <h3>For</h3>
+          <h3>{t.forTitle}</h3>
           <ul className="list pros">{ev.pros.map((p, i) => <li key={i}>{p}</li>)}</ul>
         </div>
         <div>
-          <h3>Against</h3>
+          <h3>{t.against}</h3>
           <ul className="list cons">{ev.cons.map((p, i) => <li key={i}>{p}</li>)}</ul>
         </div>
       </section>
 
       <section>
-        <h3>Ways to improve it</h3>
+        <h3>{t.improve}</h3>
         <ul className="improvements">
           {ev.improvements.map((p, i) => (
             <li key={i}>
@@ -102,9 +104,9 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
               <button
                 className={applied.has(i) ? "done" : ""}
                 onClick={() => { onUseImprovement(p); setApplied((s) => new Set(s).add(i)); }}
-                title="Add this to your proposal, then evaluate again"
+                title={t.addTitle}
               >
-                {applied.has(i) ? "Added" : "Add"}
+                {applied.has(i) ? t.added : t.add}
               </button>
             </li>
           ))}
@@ -112,10 +114,10 @@ export default function ResultPanel({ evaluation: ev, mode, onUseImprovement, on
       </section>
 
       <div className="result-actions">
-        <button className="secondary" onClick={copyLink} title="Copy a link that opens BLRoad with this proposal filled in">
-          {copied ? "Link copied" : "Copy link"}
+        <button className="secondary" onClick={copyLink} title={t.copyTitle}>
+          {copied ? t.linkCopied : t.copyLink}
         </button>
-        <button className="secondary" onClick={onCompare}>Compare with another →</button>
+        <button className="secondary" onClick={onCompare}>{t.compareAnother}</button>
       </div>
     </div>
   );

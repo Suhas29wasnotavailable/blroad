@@ -11,6 +11,7 @@ npm run build      # tsc -b (client) + tsc -p tsconfig.server.json (server) + vi
 npm start          # production: Express serves the API and dist/ on :8787
 npm run lint       # oxlint
 npm test           # vitest: server/*.test.ts
+npm run check:palette   # colour-blind check of the map palette (see Accessibility)
 ```
 
 Tests cover demo-mode keyword and place matching (`server/demo.test.ts`) and road snapping with a stubbed `fetch` (`server/roads.test.ts`). To verify a change, run `npm run lint && npm test && npm run build`, then try it in the browser.
@@ -30,6 +31,7 @@ src/
   App.tsx       App state, Propose/Compare tabs, composer, loading stages, history, what the map draws
   types.ts      HistoryItem and compare Slot types
   hooks.ts      useCountUp (score reveal)
+  i18n.ts       Interface strings (English, Kannada), useT() hook, language context
   components/
     MapView.tsx      Leaflet map, hotspots, survey crosshair, road-construction animation, A/B tones
     ResultPanel.tsx  Score, stats, factors, pros/cons, improvements, "Compare with another proposal"
@@ -174,6 +176,20 @@ The server uses the Zod schema to constrain Claude. The client imports **types o
 - `prefers-reduced-motion` turns off the animations.
 - When adding UI, match this style: hairlines over boxes, mono for labels and numbers, at most one accent per element, and no decorative gradients or emoji.
 
+## Languages (`src/i18n.ts`)
+
+- Every interface string lives in `src/i18n.ts`. Components call `const t = useT()` and read `t.someKey`; never hard-code user-facing English in JSX. Strings with values are functions (`t.pinAt(lat, lng)`, `t.evaluated(score, verdict)`).
+- `en` is the source of truth. Its kind, factor and verdict names are read from `featureStyle.ts`, so the palette checker and the English UI share them. `kn` is typed as `Strings` (the shape of `en`), so a missing Kannada key is a compile error.
+- `App` holds `lang` (saved to `localStorage` as `blroad-lang`, mirrored to `<html lang>`) and provides it through `LangContext`. The header button switches language.
+- AI output (titles, summaries, reasoning) is **not** translated; it arrives in the model's language. Map tile attributions and Leaflet's base-layer names stay English.
+- Kannada typography: Noto Sans Kannada sits behind every font family, and `:lang(kn)` turns off the uppercase mono tracking on labels, which pulls Kannada clusters apart.
+- The compare headline is assembled from parts. Write each language's parts as that language's own sentences, with its terminal punctuation in `sentenceEnd`; don't translate English clause by clause.
+
+## Accessibility
+
+- **Colour is never the only cue.** Every kind has a one-letter `glyph` in `KIND_STYLE`, drawn inside point markers and construction-log swatches, and several line kinds are dashed.
+- `npm run check:palette` (`scripts/palette-check.ts`) simulates protanopia, deuteranopia and tritanopia (Machado et al. 2009) and lists colour pairs closer than ΔE*76 12. Compare tones are checked only against each other. Remaining close pairs must differ by dash or glyph. Run it whenever you add or recolour a kind.
+
 ## How the server works (`server/index.ts`)
 
 - Express 5 with `cors()` and `express.json({limit:"100kb"})`.
@@ -194,6 +210,6 @@ The server uses the Zod schema to constrain Claude. The client imports **types o
 ## Conventions and gotchas
 
 - Keep the client free of Node and SDK imports. It may import only types (and plain data like `AREAS`) from `src/shared`.
-- New feature kinds need a `KIND_STYLE` entry. Add `flow` if traffic should animate along it, and add the kind to `ROAD_KINDS` if it runs along an existing road.
+- New feature kinds need a `KIND_STYLE` entry (colour, label, glyph). Add `flow` if traffic should animate along it, and add the kind to `ROAD_KINDS` if it runs along an existing road. Add its Kannada name to `kn.kinds` and run `npm run check:palette`.
 - Every external call (Claude, OSRM, tiles) has a fallback path. Keep it that way, so the app still runs end to end with no key and no network routing.
 - Don't add fixed delays on the AI path. The demo-mode minimum wait exists only because demo answers are instant.
